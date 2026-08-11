@@ -1,0 +1,852 @@
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-width: 320px;
+  min-height: 100vh;
+  font-family:
+    Pretendard,
+    -apple-system,
+    BlinkMacSystemFont,
+    "Segoe UI",
+    sans-serif;
+  background: #f4f7fb;
+  color: #182230;
+}
+
+button,
+input {
+  font: inherit;
+}
+
+.app {
+  min-height: 100vh;
+  padding: 34px 20px 70px;
+}
+
+.container {
+  width: 100%;
+  max-width: 1280px;
+  margin: 0 auto;
+}
+
+/* ================================
+HEADER
+================================ */
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 24px;
+}
+
+.eyebrow {
+  margin: 0 0 7px;
+  color: #5865f2;
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 1.4px;
+}
+
+.header h1 {
+  margin: 0;
+  font-size: 38px;
+  line-height: 1;
+  letter-spacing: -1.5px;
+}
+
+.subtitle {
+  margin: 12px 0 0;
+  color: #667085;
+  line-height: 1.6;
+}
+
+.status-badge {
+  padding: 8px 13px;
+  border-radius: 999px;
+  background: #e9edff;
+  color: #5865f2;
+  font-size: 12px;
+  font-weight: 800;
+}
+
+/* ================================
+MAP / SEARCH
+================================ */
+
+.map-card {
+  position: relative;
+  overflow: hidden;
+  border-radius: 26px;
+  background: white;
+  box-shadow: 0 14px 45px rgba(20, 34, 66, 0.1);
+}
+
+.google-map {
+  width: 100%;
+  height: 610px;
+  background: #e9edf5;
+}
+
+.map-loading {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255, 255, 255, 0.82);
+  color: #667085;
+  font-weight: 700;
+  z-index: 4;
+}
+
+.map-search-panel {
+  position: absolute;
+  top: 22px;
+  left: 22px;
+  right: 22px;
+  z-index: 5;
+
+  display: grid;
+  grid-template-columns:
+    minmax(0, 1fr)
+    auto
+    minmax(0, 1fr)
+    auto;
+
+  gap: 12px;
+  align-items: center;
+
+  padding: 14px;
+
+  border: 1px solid rgba(229, 231, 235, 0.9);
+  border-radius: 20px;
+
+  background: rgba(255, 255, 255, 0.96);
+
+  box-shadow:
+    0 12px 28px
+    rgba(20, 34, 66, 0.12);
+
+  backdrop-filter: blur(10px);
+}
+
+.map-location {
+  min-width: 0;
+  padding: 12px 15px;
+  border-radius: 14px;
+  background: #f7f8fc;
+}
+
+.map-location span {
+  display: block;
+  margin-bottom: 4px;
+  color: #98a2b3;
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.map-location strong {
+  display: block;
+  overflow: hidden;
+  color: #182230;
+  font-size: 15px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.map-search-arrow {
+  color: #5865f2;
+  font-size: 22px;
+  font-weight: 900;
+}
+
+.map-search-button {
+  border: 0;
+  border-radius: 14px;
+  padding: 15px 19px;
+  background: #5865f2;
+  color: white;
+  font-weight: 800;
+  cursor: pointer;
+  white-space: nowrap;
+  transition:
+    transform 0.15s ease,
+    opacity 0.15s ease;
+}
+
+.map-search-button:hover {
+  transform: translateY(-1px);
+}
+
+.map-search-button:disabled {
+  opacity: 0.65;
+  cursor: wait;
+}
+
+/* ================================
+RESULT WORKSPACE
+왼쪽 후보 / 오른쪽 지도
+================================ */
+
+.route-workspace {
+  display: grid;
+  grid-template-columns: 330px minmax(0, 1fr);
+  gap: 14px;
+  margin-top: 20px;
+  align-items: stretch;
+}
+
+.route-candidate-panel {
+  min-width: 0;
+  height: 610px;
+  overflow-y: auto;
+  padding: 20px;
+  border: 1px solid #e5e7eb;
+  border-radius: 22px;
+  background: #fbfcff;
+  box-shadow: 0 8px 28px rgba(20, 34, 66, 0.06);
+}
+
+.route-candidate-panel::-webkit-scrollbar {
+  width: 6px;
+}
+
+.route-candidate-panel::-webkit-scrollbar-thumb {
+  border-radius: 999px;
+  background: #d9ddea;
+}
+
+.route-panel-heading {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 10px;
+  margin-bottom: 16px;
+}
+
+.route-panel-heading h2 {
+  margin: 0;
+  font-size: 21px;
+  letter-spacing: -0.7px;
+}
+
+.route-panel-heading p {
+  margin: 6px 0 0;
+  color: #98a2b3;
+  font-size: 12px;
+}
+
+.route-count {
+  padding: 6px 9px;
+  border-radius: 999px;
+  background: #e9edff;
+  color: #5865f2;
+  font-size: 10px;
+  font-weight: 800;
+}
+
+.route-candidate-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.route-candidate {
+  position: relative;
+  width: 100%;
+  padding: 16px;
+  border: 1px solid #e5e7eb;
+  border-radius: 17px;
+  background: white;
+  color: #182230;
+  text-align: left;
+  cursor: pointer;
+
+  transition:
+    border-color 0.15s ease,
+    background 0.15s ease,
+    transform 0.15s ease,
+    box-shadow 0.15s ease;
+}
+
+.route-candidate:hover {
+  transform: translateY(-1px);
+  border-color: #cbd0f8;
+  box-shadow: 0 8px 22px rgba(20, 34, 66, 0.07);
+}
+
+.route-candidate.selected {
+  border: 2px solid #5865f2;
+  background: #f7f8ff;
+  box-shadow:
+    0 8px 24px rgba(88, 101, 242, 0.12);
+}
+
+.route-candidate-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 10px;
+}
+
+.route-rank {
+  display: inline-flex;
+  padding: 5px 8px;
+  border-radius: 999px;
+  background: #f1f3f7;
+  color: #667085;
+  font-size: 10px;
+  font-weight: 800;
+}
+
+.route-rank.first {
+  background: #e9edff;
+  color: #5865f2;
+}
+
+.route-best-badge {
+  padding: 5px 8px;
+  border-radius: 999px;
+  background: #182230;
+  color: white;
+  font-size: 9px;
+  font-weight: 800;
+}
+
+.route-candidate-title {
+  display: block;
+  padding-right: 18px;
+  font-size: 15px;
+  line-height: 1.45;
+  font-weight: 800;
+  letter-spacing: -0.2px;
+  word-break: keep-all;
+}
+
+.route-candidate-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0;
+  margin-top: 12px;
+  color: #667085;
+  font-size: 11px;
+}
+
+.route-candidate-meta span {
+  padding: 0 8px;
+  border-right: 1px solid #e5e7eb;
+}
+
+.route-candidate-meta span:first-child {
+  padding-left: 0;
+}
+
+.route-candidate-meta span:last-child {
+  padding-right: 0;
+  border-right: 0;
+}
+
+.route-candidate-arrow {
+  position: absolute;
+  right: 14px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #c0c6d4;
+  font-size: 17px;
+  font-weight: 800;
+}
+
+.route-candidate.selected .route-candidate-arrow {
+  color: #5865f2;
+}
+
+/* ================================
+MAP COLUMN
+================================ */
+
+.route-map-column {
+  min-width: 0;
+}
+
+.route-map-column .map-card {
+  margin-top: 0;
+  height: 610px;
+}
+
+.route-map-column .google-map {
+  height: 610px;
+}
+
+/* ================================
+SELECTED ROUTE DETAIL
+지도 아래 하얀 박스
+================================ */
+
+.selected-route-detail {
+  margin-top: 14px;
+  padding: 26px 28px;
+  border: 1px solid #e5e7eb;
+  border-radius: 23px;
+  background: white;
+  box-shadow:
+    0 10px 35px
+    rgba(20, 34, 66, 0.07);
+}
+
+.selected-route-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 20px;
+}
+
+.selected-route-kicker {
+  display: inline-flex;
+  padding: 6px 10px;
+  border-radius: 999px;
+  background: #e9edff;
+  color: #5865f2;
+  font-size: 10px;
+  font-weight: 800;
+}
+
+.selected-route-header h2 {
+  margin: 12px 0 0;
+  font-size: 27px;
+  line-height: 1.4;
+  letter-spacing: -0.8px;
+  word-break: keep-all;
+}
+
+.selected-route-time {
+  flex: 0 0 auto;
+  min-width: 115px;
+  padding: 13px 16px;
+  border-radius: 16px;
+  background: #f0f2ff;
+  text-align: center;
+}
+
+.selected-route-time span {
+  display: block;
+  margin-bottom: 4px;
+  color: #8a94b8;
+  font-size: 10px;
+  font-weight: 700;
+}
+
+.selected-route-time strong {
+  color: #5865f2;
+  font-size: 21px;
+}
+
+.selected-route-stats {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 10px;
+  margin-top: 20px;
+}
+
+.selected-route-stats > div {
+  padding: 14px;
+  border-radius: 14px;
+  background: #f7f8fc;
+}
+
+.selected-route-stats span {
+  display: block;
+  margin-bottom: 5px;
+  color: #98a2b3;
+  font-size: 10px;
+  font-weight: 700;
+}
+
+.selected-route-stats strong {
+  font-size: 15px;
+}
+
+.selected-route-segments {
+  margin-top: 24px;
+}
+
+.detail-section-title {
+  margin-bottom: 11px;
+  font-size: 14px;
+  font-weight: 800;
+}
+
+.segment-list {
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+}
+
+.segment-card {
+  padding: 15px 17px;
+  border-radius: 15px;
+  background: #f7f8fc;
+}
+
+.segment-title {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  margin-bottom: 8px;
+}
+
+.segment-type {
+  color: #5865f2;
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.segment-title strong {
+  font-size: 15px;
+}
+
+.segment-stops {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+  color: #344054;
+  font-size: 13px;
+  line-height: 1.55;
+  word-break: keep-all;
+}
+
+.segment-arrow {
+  color: #98a2b3;
+}
+
+.segment-subinfo {
+  margin-top: 5px;
+  color: #98a2b3;
+  font-size: 11px;
+}
+
+/* ================================
+RECOMMENDATION REASON
+================================ */
+
+.route-reason-box {
+  margin-top: 18px;
+  padding: 17px 18px;
+  border-radius: 15px;
+  background: #f7f8fc;
+}
+
+.route-reason-box strong {
+  display: block;
+  margin-bottom: 6px;
+  font-size: 13px;
+}
+
+.route-reason-box p {
+  margin: 0;
+  color: #667085;
+  font-size: 13px;
+  line-height: 1.75;
+  word-break: keep-all;
+}
+
+/* ================================
+GEMINI
+================================ */
+
+.route-ai-box {
+  margin-top: 12px;
+  padding: 19px 20px;
+  border-radius: 17px;
+  background: #182230;
+  color: white;
+}
+
+.route-ai-title {
+  margin-bottom: 9px;
+  color: #b7c0ff;
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.route-ai-box p {
+  margin: 0;
+  color: #f8fafc;
+  line-height: 1.75;
+  word-break: keep-all;
+}
+
+/* 기존 클래스도 유지 */
+.ai-card {
+  margin-top: 12px;
+  padding: 19px 20px;
+  border-radius: 17px;
+  background: #182230;
+  color: white;
+}
+
+.ai-title {
+  margin-bottom: 9px;
+  color: #b7c0ff;
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.ai-card p {
+  margin: 0;
+  line-height: 1.75;
+  word-break: keep-all;
+}
+
+/* ================================
+ERROR
+================================ */
+
+.error-card {
+  margin-top: 20px;
+  padding: 17px 19px;
+  border-radius: 15px;
+  background: #fff1f1;
+  color: #d92d20;
+  font-weight: 700;
+}
+
+/* ================================
+LEGACY SUPPORT
+기존 JSX에서 사용될 수 있는 클래스 유지
+================================ */
+
+.map-result-banner {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1px;
+  margin-top: 20px;
+  overflow: hidden;
+  border-radius: 20px;
+  background: #e5e7eb;
+  box-shadow: 0 8px 30px rgba(20, 34, 66, 0.05);
+}
+
+.map-result-banner > div {
+  padding: 19px 22px;
+  background: white;
+}
+
+.map-result-banner span {
+  display: block;
+  margin-bottom: 5px;
+  color: #98a2b3;
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.map-result-banner strong {
+  font-size: 18px;
+}
+
+.main-route-card {
+  margin-top: 20px;
+  padding: 28px;
+  border: 2px solid #5865f2;
+  border-radius: 24px;
+  background: white;
+  box-shadow: 0 14px 40px rgba(88, 101, 242, 0.12);
+}
+
+.route-card-header {
+  display: flex;
+  justify-content: space-between;
+  gap: 24px;
+  align-items: flex-start;
+}
+
+.recommended-pill {
+  display: inline-flex;
+  padding: 6px 10px;
+  border-radius: 999px;
+  background: #e9edff;
+  color: #5865f2;
+  font-size: 11px;
+  font-weight: 800;
+}
+
+.route-card-header h2 {
+  margin: 14px 0 0;
+  font-size: 26px;
+  line-height: 1.45;
+  letter-spacing: -0.8px;
+}
+
+.route-card-header h2 strong {
+  color: #5865f2;
+}
+
+.route-info-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 10px;
+  margin-top: 20px;
+}
+
+.route-info-grid > div {
+  padding: 14px;
+  border-radius: 14px;
+  background: #f7f8fc;
+}
+
+.route-info-grid span {
+  display: block;
+  margin-bottom: 4px;
+  color: #98a2b3;
+  font-size: 10px;
+}
+
+.route-info-grid strong {
+  font-size: 15px;
+}
+
+.saving-box {
+  flex: 0 0 auto;
+  min-width: 110px;
+  padding: 15px 18px;
+  border-radius: 16px;
+  background: #f0f2ff;
+  text-align: center;
+}
+
+.saving-box span {
+  display: block;
+  margin-bottom: 5px;
+  color: #8a94b8;
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.saving-box strong {
+  color: #5865f2;
+  font-size: 22px;
+}
+
+/* ================================
+TABLET
+================================ */
+
+@media (max-width: 1050px) {
+  .route-workspace {
+    grid-template-columns: 290px minmax(0, 1fr);
+  }
+
+  .route-candidate-panel,
+  .route-map-column .map-card,
+  .route-map-column .google-map {
+    height: 560px;
+  }
+
+  .selected-route-stats {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+/* ================================
+MOBILE
+================================ */
+
+@media (max-width: 800px) {
+  .app {
+    padding: 22px 12px 50px;
+  }
+
+  .header h1 {
+    font-size: 32px;
+  }
+
+  .header {
+    margin-bottom: 18px;
+  }
+
+  .map-search-panel {
+    grid-template-columns: 1fr;
+  }
+
+  .map-search-arrow {
+    display: none;
+  }
+
+  .map-search-button {
+    width: 100%;
+  }
+
+  .route-workspace {
+    grid-template-columns: 1fr;
+  }
+
+  .route-candidate-panel {
+    height: auto;
+    max-height: none;
+    padding: 15px;
+  }
+
+  .route-candidate-list {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .route-map-column .map-card,
+  .route-map-column .google-map,
+  .google-map {
+    height: 470px;
+  }
+
+  .selected-route-header {
+    flex-direction: column;
+  }
+
+  .selected-route-time {
+    width: 100%;
+  }
+
+  .selected-route-stats {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .map-result-banner {
+    grid-template-columns: 1fr;
+  }
+
+  .route-info-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 520px) {
+  .route-candidate-list {
+    grid-template-columns: 1fr;
+  }
+
+  .route-map-column .map-card,
+  .route-map-column .google-map,
+  .google-map {
+    height: 390px;
+  }
+
+  .selected-route-detail {
+    padding: 20px;
+  }
+
+  .selected-route-header h2 {
+    font-size: 22px;
+  }
+
+  .selected-route-stats {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .route-info-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}

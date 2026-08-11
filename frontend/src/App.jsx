@@ -130,23 +130,53 @@ function App() {
 
     const timer = setTimeout(async () => {
       try {
+        // =====================================================
+        // 121개 서울 주요 장소 로컬 JSON 검색
+        // Netlify에서 /api/areas 백엔드에 의존하지 않도록
+        // public/seoul_121_areas.json을 직접 사용한다.
+        // =====================================================
+
         const response = await fetch(
-          `/api/areas?q=${encodeURIComponent(keyword)}`
+          "/seoul_121_areas.json"
         );
 
         if (!response.ok) {
           throw new Error(
-            `출발지 검색 오류: ${response.status}`
+            `121장소 데이터 로드 오류: ${response.status}`
           );
         }
 
-        const data = await response.json();
+        const areas = await response.json();
 
-        setAreaResults(data.areas || []);
+        const normalizedKeyword =
+          keyword.toLowerCase();
+
+        const results = areas.filter((area) => {
+          const areaName = String(
+            area.area_name || ""
+          ).toLowerCase();
+
+          const englishName = String(
+            area.english_name || ""
+          ).toLowerCase();
+
+          const category = String(
+            area.category || ""
+          ).toLowerCase();
+
+          return (
+            areaName.includes(normalizedKeyword) ||
+            englishName.includes(normalizedKeyword) ||
+            category.includes(normalizedKeyword)
+          );
+        });
+
+        setAreaResults(results);
         setShowAreaResults(true);
       } catch (err) {
         console.error("121장소 검색 실패:", err);
         setAreaResults([]);
+        setShowAreaResults(true);
       }
     }, 250);
 
@@ -923,13 +953,18 @@ function App() {
                   background: "#F7F8FC",
                 }}
               >
-                <span style={{ display: "block", marginBottom: "3px", color: "#98A2B3", fontSize: "10px", fontWeight: "700" }}>출발</span>
+                <span style={{ display: "block", marginBottom: "3px", color: "#98A2B3", fontSize: "10px", fontWeight: "700" }}>
+                  출발
+                </span>
+
                 <strong style={{ display: "block", overflow: "hidden", color: "#182230", fontSize: "14px", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
                   {selectedArea?.area_name || originQuery || "출발지"}
                 </strong>
               </div>
 
-              <div style={{ color: "#5865F2", fontSize: "22px", fontWeight: "900", flexShrink: 0 }}>→</div>
+              <div style={{ color: "#5865F2", fontSize: "22px", fontWeight: "900", flexShrink: 0 }}>
+                →
+              </div>
 
               <div
                 style={{
@@ -940,7 +975,10 @@ function App() {
                   background: "#F7F8FC",
                 }}
               >
-                <span style={{ display: "block", marginBottom: "3px", color: "#98A2B3", fontSize: "10px", fontWeight: "700" }}>도착</span>
+                <span style={{ display: "block", marginBottom: "3px", color: "#98A2B3", fontSize: "10px", fontWeight: "700" }}>
+                  도착
+                </span>
+
                 <strong style={{ display: "block", overflow: "hidden", color: "#182230", fontSize: "14px", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
                   {selectedDestination?.name || destinationQuery || "목적지"}
                 </strong>
@@ -965,269 +1003,89 @@ function App() {
               style={{ position: "absolute", zIndex: 20 }}
             >
 
-            {/* 출발 */}
+              {/* 출발 */}
 
-            <div
-              className="map-location"
-              style={{
-                position: "relative",
-              }}
-            >
-
-              <span>
-                출발
-              </span>
-
-              <input
-                type="text"
-                value={originQuery}
-                placeholder="서울시 주요 장소 검색"
-                onChange={(e) => {
-                  setOriginQuery(
-                    e.target.value
-                  );
-
-                  setSelectedArea(null);
-                  setOriginLocation(null);
-                  setResult(null);
-                }}
-                onFocus={() => {
-                  if (
-                    areaResults.length > 0
-                  ) {
-                    setShowAreaResults(true);
-                  }
-                }}
+              <div
+                className="map-location"
                 style={{
-                  width: "100%",
-                  border: "none",
-                  outline: "none",
-                  background: "transparent",
-                  fontSize: "16px",
-                  fontWeight: "700",
-                  padding: "4px 0",
+                  position: "relative",
                 }}
-              />
+              >
 
-              {showAreaResults &&
-                originQuery.trim() && (
-                  <div
-                    style={{
-                      position: "absolute",
-                      top: "65px",
-                      left: 0,
-                      right: 0,
-                      background: "#fff",
-                      borderRadius: "14px",
-                      boxShadow:
-                        "0 12px 35px rgba(0,0,0,.18)",
-                      zIndex: 9999,
-                      padding: "8px",
-                      maxHeight: "300px",
-                      overflowY: "auto",
-                    }}
-                  >
-                    {areaResults.length > 0 ? (
-                      areaResults.map(
-                        (area) => (
-                          <button
-                            key={
-                              area.area_code
-                            }
-                            type="button"
-                            onClick={() =>
-                              handleAreaSelect(
-                                area
-                              )
-                            }
-                            style={{
-                              display: "flex",
-                              width: "100%",
-                              justifyContent:
-                                "space-between",
-                              alignItems:
-                                "center",
-                              border: "none",
-                              background:
-                                "transparent",
-                              cursor:
-                                "pointer",
-                              textAlign:
-                                "left",
-                              padding:
-                                "12px 14px",
-                              borderRadius:
-                                "10px",
-                            }}
-                          >
-                            <span
-                              style={{
-                                fontWeight:
-                                  "700",
-                              }}
-                            >
-                              {
-                                area.area_name
-                              }
-                            </span>
+                <span>
+                  출발
+                </span>
 
-                            <span
-                              style={{
-                                fontSize:
-                                  "12px",
-                                color:
-                                  "#6B7280",
-                              }}
-                            >
-                              {
-                                area.category
-                              }
-                            </span>
-                          </button>
-                        )
-                      )
-                    ) : (
-                      <div
-                        style={{
-                          padding:
-                            "16px",
-                          color:
-                            "#6B7280",
-                        }}
-                      >
-                        지원하는 장소가
-                        없습니다.
-                      </div>
-                    )}
-                  </div>
-                )}
-
-              {selectedArea &&
-                originLocation &&
-                !originResolving && (
-                  <small
-                    style={{
-                      display: "block",
-                      marginTop: "3px",
-                      color: "#6366F1",
-                      fontSize: "11px",
-                    }}
-                  >
-                    {
-                      selectedArea.category
-                    }
-                    {" · "}
-                    {
-                      selectedArea.area_code
-                    }
-                  </small>
-                )}
-
-            </div>
-
-            <div className="map-search-arrow">
-              →
-            </div>
-
-            {/* 도착 */}
-
-            <div
-              className="map-location"
-              style={{
-                position: "relative",
-              }}
-            >
-
-              <span>
-                도착
-              </span>
-
-              <input
-                type="text"
-                value={
-                  destinationQuery
-                }
-                placeholder="목적지를 검색하세요"
-                onChange={(e) => {
-                  setDestinationQuery(
-                    e.target.value
-                  );
-
-                  setSelectedDestination(
-                    null
-                  );
-
-                  setResult(null);
-                }}
-                onFocus={() => {
-                  if (
-                    destinationResults.length >
-                    0
-                  ) {
-                    setShowDestinationResults(
-                      true
+                <input
+                  type="text"
+                  value={originQuery}
+                  placeholder="서울시 주요 장소 검색"
+                  onChange={(e) => {
+                    setOriginQuery(
+                      e.target.value
                     );
-                  }
-                }}
-                style={{
-                  width: "100%",
-                  border: "none",
-                  outline: "none",
-                  background: "transparent",
-                  fontSize: "16px",
-                  fontWeight: "700",
-                  padding: "4px 0",
-                }}
-              />
 
-              {showDestinationResults &&
-                destinationQuery.trim() && (
-                  <div
-                    style={{
-                      position: "absolute",
-                      top: "65px",
-                      left: 0,
-                      right: 0,
-                      background: "#fff",
-                      borderRadius: "14px",
-                      boxShadow:
-                        "0 12px 35px rgba(0,0,0,.18)",
-                      zIndex: 9999,
-                      padding: "8px",
-                      maxHeight: "320px",
-                      overflowY: "auto",
-                    }}
-                  >
-                    {destinationResults.length >
-                    0 ? (
-                      destinationResults.map(
-                        (
-                          suggestion,
-                          index
-                        ) => {
-                          const prediction =
-                            suggestion.placePrediction;
+                    setSelectedArea(null);
+                    setOriginLocation(null);
+                    setResult(null);
+                  }}
+                  onFocus={() => {
+                    if (
+                      areaResults.length > 0
+                    ) {
+                      setShowAreaResults(true);
+                    }
+                  }}
+                  style={{
+                    width: "100%",
+                    border: "none",
+                    outline: "none",
+                    background: "transparent",
+                    fontSize: "16px",
+                    fontWeight: "700",
+                    padding: "4px 0",
+                  }}
+                />
 
-                          return (
+                {showAreaResults &&
+                  originQuery.trim() && (
+                    <div
+                      style={{
+                        position: "absolute",
+                        top: "65px",
+                        left: 0,
+                        right: 0,
+                        background: "#fff",
+                        borderRadius: "14px",
+                        boxShadow:
+                          "0 12px 35px rgba(0,0,0,.18)",
+                        zIndex: 9999,
+                        padding: "8px",
+                        maxHeight: "300px",
+                        overflowY: "auto",
+                      }}
+                    >
+                      {areaResults.length > 0 ? (
+                        areaResults.map(
+                          (area) => (
                             <button
                               key={
-                                prediction
-                                  .placeId ||
-                                index
+                                area.area_code
                               }
                               type="button"
                               onClick={() =>
-                                handleDestinationSelect(
-                                  suggestion
+                                handleAreaSelect(
+                                  area
                                 )
                               }
                               style={{
-                                display:
-                                  "block",
-                                width:
-                                  "100%",
-                                border:
-                                  "none",
+                                display: "flex",
+                                width: "100%",
+                                justifyContent:
+                                  "space-between",
+                                alignItems:
+                                  "center",
+                                border: "none",
                                 background:
                                   "transparent",
                                 cursor:
@@ -1240,71 +1098,250 @@ function App() {
                                   "10px",
                               }}
                             >
-                              <strong>
+                              <span
+                                style={{
+                                  fontWeight:
+                                    "700",
+                                }}
+                              >
                                 {
-                                  prediction
-                                    .text
-                                    .toString()
+                                  area.area_name
                                 }
-                              </strong>
+                              </span>
+
+                              <span
+                                style={{
+                                  fontSize:
+                                    "12px",
+                                  color:
+                                    "#6B7280",
+                                }}
+                              >
+                                {
+                                  area.category
+                                }
+                              </span>
                             </button>
-                          );
-                        }
-                      )
-                    ) : (
-                      <div
-                        style={{
-                          padding:
-                            "16px",
-                          color:
-                            "#6B7280",
-                        }}
-                      >
-                        검색 결과가
-                        없습니다.
-                      </div>
-                    )}
-                  </div>
+                          )
+                        )
+                      ) : (
+                        <div
+                          style={{
+                            padding:
+                              "16px",
+                            color:
+                              "#6B7280",
+                          }}
+                        >
+                          지원하는 장소가
+                          없습니다.
+                        </div>
+                      )}
+                    </div>
+                  )}
+
+                {selectedArea &&
+                  originLocation &&
+                  !originResolving && (
+                    <small
+                      style={{
+                        display: "block",
+                        marginTop: "3px",
+                        color: "#6366F1",
+                        fontSize: "11px",
+                      }}
+                    >
+                      {
+                        selectedArea.category
+                      }
+                      {" · "}
+                      {
+                        selectedArea.area_code
+                      }
+                    </small>
+                  )}
+
+              </div>
+
+              <div className="map-search-arrow">
+                →
+              </div>
+
+              {/* 도착 */}
+
+              <div
+                className="map-location"
+                style={{
+                  position: "relative",
+                }}
+              >
+
+                <span>
+                  도착
+                </span>
+
+                <input
+                  type="text"
+                  value={
+                    destinationQuery
+                  }
+                  placeholder="목적지를 검색하세요"
+                  onChange={(e) => {
+                    setDestinationQuery(
+                      e.target.value
+                    );
+
+                    setSelectedDestination(
+                      null
+                    );
+
+                    setResult(null);
+                  }}
+                  onFocus={() => {
+                    if (
+                      destinationResults.length >
+                      0
+                    ) {
+                      setShowDestinationResults(
+                        true
+                      );
+                    }
+                  }}
+                  style={{
+                    width: "100%",
+                    border: "none",
+                    outline: "none",
+                    background: "transparent",
+                    fontSize: "16px",
+                    fontWeight: "700",
+                    padding: "4px 0",
+                  }}
+                />
+
+                {showDestinationResults &&
+                  destinationQuery.trim() && (
+                    <div
+                      style={{
+                        position: "absolute",
+                        top: "65px",
+                        left: 0,
+                        right: 0,
+                        background: "#fff",
+                        borderRadius: "14px",
+                        boxShadow:
+                          "0 12px 35px rgba(0,0,0,.18)",
+                        zIndex: 9999,
+                        padding: "8px",
+                        maxHeight: "320px",
+                        overflowY: "auto",
+                      }}
+                    >
+                      {destinationResults.length >
+                      0 ? (
+                        destinationResults.map(
+                          (
+                            suggestion,
+                            index
+                          ) => {
+                            const prediction =
+                              suggestion.placePrediction;
+
+                            return (
+                              <button
+                                key={
+                                  prediction
+                                    .placeId ||
+                                  index
+                                }
+                                type="button"
+                                onClick={() =>
+                                  handleDestinationSelect(
+                                    suggestion
+                                  )
+                                }
+                                style={{
+                                  display:
+                                    "block",
+                                  width:
+                                    "100%",
+                                  border:
+                                    "none",
+                                  background:
+                                    "transparent",
+                                  cursor:
+                                    "pointer",
+                                  textAlign:
+                                    "left",
+                                  padding:
+                                    "12px 14px",
+                                  borderRadius:
+                                    "10px",
+                                }}
+                              >
+                                <strong>
+                                  {
+                                    prediction
+                                      .text
+                                      .toString()
+                                  }
+                                </strong>
+                              </button>
+                            );
+                          }
+                        )
+                      ) : (
+                        <div
+                          style={{
+                            padding:
+                              "16px",
+                            color:
+                              "#6B7280",
+                          }}
+                        >
+                          검색 결과가
+                          없습니다.
+                        </div>
+                      )}
+                    </div>
+                  )}
+
+                {selectedDestination && (
+                  <small
+                    style={{
+                      display: "block",
+                      marginTop: "3px",
+                      color: "#6366F1",
+                      fontSize: "11px",
+                      whiteSpace:
+                        "nowrap",
+                      overflow: "hidden",
+                      textOverflow:
+                        "ellipsis",
+                    }}
+                  >
+                    {
+                      selectedDestination.address
+                    }
+                  </small>
                 )}
 
-              {selectedDestination && (
-                <small
-                  style={{
-                    display: "block",
-                    marginTop: "3px",
-                    color: "#6366F1",
-                    fontSize: "11px",
-                    whiteSpace:
-                      "nowrap",
-                    overflow: "hidden",
-                    textOverflow:
-                      "ellipsis",
-                  }}
-                >
-                  {
-                    selectedDestination.address
-                  }
-                </small>
-              )}
+              </div>
 
-            </div>
-
-            <button
-              className="map-search-button"
-              onClick={handleRecommend}
-              disabled={
-                loading ||
-                !mapReady ||
-                !selectedArea ||
-                !originLocation ||
-                !selectedDestination
-              }
-            >
-              {loading
-                ? "경로 분석 중..."
-                : "추천 경로 찾기"}
-            </button>
-
+              <button
+                className="map-search-button"
+                onClick={handleRecommend}
+                disabled={
+                  loading ||
+                  !mapReady ||
+                  !selectedArea ||
+                  !originLocation ||
+                  !selectedDestination
+                }
+              >
+                {loading
+                  ? "경로 분석 중..."
+                  : "추천 경로 찾기"}
+              </button>
 
             </div>
           )}
@@ -1417,6 +1454,7 @@ function App() {
                         <span style={{ padding: "4px 8px", borderRadius: "999px", background: active ? "#E9EDFF" : "#F1F3F7", color: active ? "#5865F2" : "#667085", fontSize: "10px", fontWeight: "800" }}>
                           {index === 0 ? "추천" : `${index + 1}위`}
                         </span>
+
                         {index === 0 && (
                           <span style={{ fontSize: "9px", fontWeight: "800", color: "#fff", background: "#182230", padding: "4px 6px", borderRadius: "999px" }}>
                             BEST
@@ -1429,9 +1467,21 @@ function App() {
                       </strong>
 
                       <div style={{ display: "flex", gap: "10px", color: "#667085", fontSize: "10px" }}>
-                        <span>{route.duration_min != null ? `${Number(route.duration_min).toFixed(1)}분` : "-"}</span>
-                        <span>환승 {route.transfer_count ?? 0}회</span>
-                        <span>도보 {route.walking_min != null ? `${Number(route.walking_min).toFixed(1)}분` : "-"}</span>
+                        <span>
+                          {route.duration_min != null
+                            ? `${Number(route.duration_min).toFixed(1)}분`
+                            : "-"}
+                        </span>
+
+                        <span>
+                          환승 {route.transfer_count ?? 0}회
+                        </span>
+
+                        <span>
+                          도보 {route.walking_min != null
+                            ? `${Number(route.walking_min).toFixed(1)}분`
+                            : "-"}
+                        </span>
                       </div>
                     </button>
                   );
@@ -1448,7 +1498,9 @@ function App() {
           <div
             ref={mapRef}
             className="google-map"
-            style={{ height: result ? "620px" : "500px" }}
+            style={{
+              height: result ? "620px" : "500px",
+            }}
           />
 
           {!mapReady && (
